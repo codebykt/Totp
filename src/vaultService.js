@@ -150,44 +150,34 @@ export async function autoLogin(token, id) {
     throw new Error("Login URL is required for auto-login");
   }
 
-  const launchOptions = resolveLaunchOptions();
-  let browser;
-  try {
-    browser = await chromium.launch(launchOptions);
-  } catch (error) {
-    throw new Error(`Failed to launch browser for auto-login. Set PLAYWRIGHT_EXECUTABLE_PATH to your installed browser (Chrome/Ulaa/Chromium) or PLAYWRIGHT_CHANNEL=chrome. Root error: ${error.message}`);
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto(record.loginUrl, { waitUntil: "domcontentloaded" });
+
+  if (record.usernameField) {
+    await page.fill(record.usernameField, record.username ?? "");
   }
-  let storageState;
-  try {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto(record.loginUrl, { waitUntil: "domcontentloaded" });
-
-    if (record.usernameField) {
-      await page.fill(record.usernameField, record.username ?? "");
-    }
-    if (record.passwordField) {
-      await page.fill(record.passwordField, record.password ?? "");
-    }
-
-    if (record.extraFieldSelectors && typeof record.extraFieldSelectors === "object") {
-      for (const [selector, fieldName] of Object.entries(record.extraFieldSelectors)) {
-        const value = fieldName === "totp" ? (record.totpSecret ? authenticator.generate(record.totpSecret) : "") : record.otherFields?.[fieldName] ?? "";
-        await page.fill(selector, value);
-      }
-    }
-
-    if (record.submitSelector) {
-      await Promise.all([
-        page.waitForLoadState("networkidle").catch(() => undefined),
-        page.click(record.submitSelector)
-      ]);
-    }
-
-    storageState = await context.storageState();
-  } finally {
-    await browser.close().catch(() => undefined);
+  if (record.passwordField) {
+    await page.fill(record.passwordField, record.password ?? "");
   }
+
+  if (record.extraFieldSelectors && typeof record.extraFieldSelectors === "object") {
+    for (const [selector, fieldName] of Object.entries(record.extraFieldSelectors)) {
+      const value = fieldName === "totp" ? (record.totpSecret ? authenticator.generate(record.totpSecret) : "") : record.otherFields?.[fieldName] ?? "";
+      await page.fill(selector, value);
+    }
+  }
+
+  if (record.submitSelector) {
+    await Promise.all([
+      page.waitForLoadState("networkidle").catch(() => undefined),
+      page.click(record.submitSelector)
+    ]);
+  }
+
+  const storageState = await context.storageState();
+  await browser.close();
 
   withDb((db) => {
     const snapshot = db.sessions.find((s) => s.recordId === id);
