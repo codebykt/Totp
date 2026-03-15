@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Password + Session Manager</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Local Password + Session Manager</h1>
+      <section id="init" class="card hidden">
+        <h2>Initialize vault</h2>
+        <input id="initPassword" type="password" placeholder="Master password (min 10 chars)" />
+        <button id="initBtn">Initialize</button>
+      </section>
+
+      <section id="unlock" class="card hidden">
+        <h2>Unlock vault</h2>
+        <input id="unlockPassword" type="password" placeholder="Master password" />
+        <button id="unlockBtn">Unlock</button>
+      </section>
+
+      <section id="dashboard" class="hidden">
+        <div class="card">
+          <h2>Add / Update Site</h2>
+          <form id="recordForm">
+            <input name="id" placeholder="Record ID (leave empty for new)" />
+            <input name="label" placeholder="Site label" required />
+            <input name="siteUrl" placeholder="Site URL" />
+            <input name="loginUrl" placeholder="Login URL" />
+            <input name="username" placeholder="Username" />
+            <input name="password" placeholder="Password" />
+            <input name="totpSecret" placeholder="TOTP secret" />
+            <input name="usernameField" placeholder="Username selector e.g. #email" />
+            <input name="passwordField" placeholder="Password selector" />
+            <input name="submitSelector" placeholder="Submit selector" />
+            <textarea name="otherFields" placeholder='Other fields JSON: {"securityQuestion":"abc"}'></textarea>
+            <textarea name="extraFieldSelectors" placeholder='Extra selectors JSON: {"#otp":"totp","#answer":"securityQuestion"}'></textarea>
+            <button type="submit">Save Record</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Stored Sites</h2>
+          <button id="refreshBtn">Refresh</button>
+          <button id="lockBtn">Lock Vault</button>
+          <ul id="recordsList"></ul>
+        </div>
+
+        <div class="card">
+          <h2>Saved Login Sessions</h2>
+          <ul id="sessionList"></ul>
+        </div>
+      </section>
+      <p id="msg"></p>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
