@@ -25,6 +25,29 @@ npm start
 
 Open: `http://localhost:3000`
 
+## Browser setup (use your existing browser)
+
+This app can use your already-installed browser for auto-login (no Playwright browser download required).
+
+Set one of these before `npm start`:
+
+```bash
+# Option A: use Chrome channel (recommended)
+export PLAYWRIGHT_CHANNEL=chrome
+
+# Option B: provide exact browser executable path (Chrome/Ulaa/Chromium)
+export PLAYWRIGHT_EXECUTABLE_PATH=/usr/bin/google-chrome
+# e.g. Ulaa path if installed:
+# export PLAYWRIGHT_EXECUTABLE_PATH=/usr/bin/ulaa
+```
+
+Optional:
+
+```bash
+# Show browser UI during auto-login (default is headless=true)
+export BROWSER_HEADLESS=false
+```
+
 ## How auto-login works
 
 For each site record, provide:

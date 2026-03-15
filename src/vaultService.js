@@ -3,6 +3,7 @@ import { authenticator } from "otplib";
 import { chromium } from "playwright";
 import { deriveKey, encryptJson, decryptJson, verifyMasterPassword } from "./crypto.js";
 import { readDb, withDb } from "./store.js";
+import { resolveLaunchOptions } from "./browserLaunch.js";
 
 authenticator.options = { step: 30, window: 1 };
 
